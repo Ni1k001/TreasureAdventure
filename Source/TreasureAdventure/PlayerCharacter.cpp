@@ -5,6 +5,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "TAGameInstance.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -136,4 +137,29 @@ int APlayerCharacter::GetHealth()
 int APlayerCharacter::GetMaxHealth()
 {
 	return MaxHealth;
+}
+
+void APlayerCharacter::UpdateCoinCount()
+{
+	UTAGameInstance* GI = Cast<UTAGameInstance>(GetGameInstance());
+
+	if (GI)
+	{
+		GI->UpdateCoinCount();
+	}
+
+	GetCoinCount();
+}
+
+int APlayerCharacter::GetCoinCount()
+{
+	UTAGameInstance* GI = Cast<UTAGameInstance>(GetGameInstance());
+	if (GI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CURRENT COINS: %d"), GI->GetCurrentCoinCount());
+		UE_LOG(LogTemp, Warning, TEXT("TOTAL COINS: %d"), GI->GetTotalCoinCount());
+		return GI->GetCurrentCoinCount();
+	}
+
+	return 0;
 }

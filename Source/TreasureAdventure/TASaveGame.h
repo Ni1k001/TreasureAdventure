@@ -1,0 +1,43 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/SaveGame.h"
+#include "TASaveGame.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class TREASUREADVENTURE_API UTASaveGame : public USaveGame
+{
+	GENERATED_BODY()
+	
+public:
+	UTASaveGame();
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FString SaveSlotName;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		uint32 UserIndex;
+
+	UPROPERTY(VisibleAnywhere, Category = Gameplay)
+		int CurrentCoinCount;
+
+	UPROPERTY(VisibleAnywhere, Category = Gameplay)
+		int TotalCoinCount;
+
+	UPROPERTY(VisibleAnywhere, Category = Gameplay)
+		int TotalStarCount;
+
+	UPROPERTY(VisibleAnywhere, Category = Gameplay)
+		int LifeCount;
+
+	UPROPERTY(VisibleAnywhere, Category = Level)
+		TMap<FString, int32> LevelCollectedStarFlag;
+
+	UPROPERTY(VisibleAnywhere, Category = Level)
+		TMap<FString, bool> LevelAvailability;
+};

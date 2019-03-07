@@ -58,6 +58,12 @@ public:
 	
 	int GetMaxHealth();
 
+	UFUNCTION()
+		void UpdateCoinCount();
+
+	UFUNCTION()
+		int GetCoinCount();
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Health")
 		int Health;

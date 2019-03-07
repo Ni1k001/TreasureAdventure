@@ -29,7 +29,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		TEnumAsByte<ECollectable::CollectableType> CollectableType;
 
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision)
@@ -39,10 +39,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Config)
 		UStaticMeshComponent* Mesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config, meta = (ClampMin = "0", ClampMax = "7", UIMin = "0", UIMax = "7"))
+		int StarID;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
 		void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+
+#if WITH_EDITOR
+	virtual bool CanEditChange(const UProperty* InProperty) const override;
+#endif
 };

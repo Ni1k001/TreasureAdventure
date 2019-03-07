@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "TreasureAdventure.h"
 #include "PlayerCharacter.h"
+#include "TAGameInstance.h"
 
 // Sets default values
 ACollectable::ACollectable()
@@ -22,6 +23,8 @@ ACollectable::ACollectable()
 	Mesh->SetupAttachment(RootComponent);
 
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ACollectable::BeginOverlap);
+
+	StarID = 0;
 }
 
 // Called when the game starts or when spawned
@@ -46,8 +49,29 @@ void ACollectable::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if (OtherActor != NULL && OtherActor->IsA(APlayerCharacter::StaticClass()))
 	{
 		APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor);
+		UTAGameInstance* GI = Cast<UTAGameInstance>(GetGameInstance());
 
+		if (CollectableType == ECollectable::ECoin)
+			Player->UpdateCoinCount();
+		else
+			GI->UpdateStarCount(StarID);
 		
 		Destroy();
 	}
 }
+
+
+#if WITH_EDITOR
+bool ACollectable::CanEditChange(const UProperty* InProperty) const
+{
+	const bool ParentVal = Super::CanEditChange(InProperty);
+
+	// Can we edit flower color?
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(ACollectable, StarID))
+	{
+		return CollectableType == ECollectable::EStar;
+	}
+
+	return ParentVal;
+}
+#endif
