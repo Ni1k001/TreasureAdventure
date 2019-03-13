@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TASaveGame.h"
+#include "LMHESettingsEnum.h"
 
 UTASaveGame::UTASaveGame()
 {
@@ -19,4 +20,10 @@ UTASaveGame::UTASaveGame()
 	}
 
 	LevelAvailability["Level1"] = 1;
+}
+
+UTASaveSettings::UTASaveSettings()
+{
+	SaveSlotName = TEXT("Settings");
+	UserIndex = 0;
 }

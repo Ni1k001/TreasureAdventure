@@ -15,11 +15,11 @@ struct FSoundSettingsStruct
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MasterVolume = 0;
+		float MasterVolume = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float SFXVolume = 0;
+		float SFXVolume = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MusicVolume = 0;
+		float MusicVolume = 0.f;
 };

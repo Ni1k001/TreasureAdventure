@@ -15,7 +15,7 @@ struct FControlsSettingsStruct
 	GENERATED_USTRUCT_BODY()
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MouseSensitivity = 0;
+		float MouseSensitivity = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool MouseInvert = false;

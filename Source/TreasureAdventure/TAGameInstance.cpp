@@ -100,7 +100,7 @@ void UTAGameInstance::SaveData()
 
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 
-	UE_LOG(LogTemp, Warning, TEXT("Saved"));
+	UE_LOG(LogTemp, Warning, TEXT("Saved Game"));
 }
 
 void UTAGameInstance::LoadData()
@@ -116,7 +116,7 @@ void UTAGameInstance::LoadData()
 			TotalStarCount = LoadGameInstance->TotalStarCount;
 			LifeCount = LoadGameInstance->LifeCount;
 
-			UE_LOG(LogTemp, Warning, TEXT("Loaded"));
+			UE_LOG(LogTemp, Warning, TEXT("Loaded Game"));
 
 			UE_LOG(LogTemp, Warning, TEXT("Total Coin Count: %d"), GetTotalCoinCount());
 			UE_LOG(LogTemp, Warning, TEXT("Total Star Count: %d"), GetTotalStarCount());
@@ -141,11 +141,39 @@ void UTAGameInstance::LoadData()
 	}
 }
 
-void UTAGameInstance::LoadSettings(FGraphicsSettingsStruct &GraphicsSettings, FSoundSettingsStruct &SoundSettings, FControlsSettingsStruct &ControlsSettings)
-{
-}
-
 void UTAGameInstance::SaveSettings(FGraphicsSettingsStruct GraphicsSettings, FSoundSettingsStruct SoundSettings, FControlsSettingsStruct ControlsSettings)
 {
+	UTASaveSettings* SaveSettingsInstance = Cast<UTASaveSettings>(UGameplayStatics::CreateSaveGameObject(UTASaveSettings::StaticClass()));
 
+	SaveSettingsInstance->SaveSlotName = "Settings";
+	SaveSettingsInstance->UserIndex = 0;
+	SaveSettingsInstance->GraphicsSettings = GraphicsSettings;
+	SaveSettingsInstance->SoundSettings = SoundSettings;
+	SaveSettingsInstance->ControlsSettings = ControlsSettings;
+
+	UGameplayStatics::SaveGameToSlot(SaveSettingsInstance, SaveSettingsInstance->SaveSlotName, SaveSettingsInstance->UserIndex);
+
+	UE_LOG(LogTemp, Warning, TEXT("Saved Settings"));
+}
+
+void UTAGameInstance::LoadSettings(FGraphicsSettingsStruct &GraphicsSettings, FSoundSettingsStruct &SoundSettings, FControlsSettingsStruct &ControlsSettings)
+{
+	UTASaveSettings* LoadSettingsInstance = Cast<UTASaveSettings>(UGameplayStatics::CreateSaveGameObject(UTASaveSettings::StaticClass()));
+
+	if (UGameplayStatics::DoesSaveGameExist(LoadSettingsInstance->SaveSlotName, 0))
+	{
+		LoadSettingsInstance = Cast<UTASaveSettings>(UGameplayStatics::LoadGameFromSlot(LoadSettingsInstance->SaveSlotName, LoadSettingsInstance->UserIndex));
+		if (LoadSettingsInstance)
+		{
+			GraphicsSettings = LoadSettingsInstance->GraphicsSettings;
+			SoundSettings = LoadSettingsInstance->SoundSettings;
+			ControlsSettings = LoadSettingsInstance->ControlsSettings;
+
+			UE_LOG(LogTemp, Warning, TEXT("Loaded Settings"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Save not existing"));
+	}
 }

@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "GraphicsSettingsStruct.h"
+#include "SoundSettingsStruct.h"
+#include "ControlsSettingsStruct.h"
 #include "TASaveGame.generated.h"
 
 /**
@@ -40,4 +43,29 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Level)
 		TMap<FString, bool> LevelAvailability;
+};
+
+
+UCLASS()
+class TREASUREADVENTURE_API UTASaveSettings : public USaveGame
+{
+	GENERATED_BODY()
+
+public:
+	UTASaveSettings();
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FString SaveSlotName;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		uint32 UserIndex;
+
+	UPROPERTY(VisibleAnywhere, Category = Settings)
+		FGraphicsSettingsStruct GraphicsSettings;
+
+	UPROPERTY(VisibleAnywhere, Category = Settings)
+		FSoundSettingsStruct SoundSettings;
+
+	UPROPERTY(VisibleAnywhere, Category = Settings)
+		FControlsSettingsStruct ControlsSettings;
 };
