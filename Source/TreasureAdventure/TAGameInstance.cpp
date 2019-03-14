@@ -137,7 +137,7 @@ void UTAGameInstance::LoadData()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Save not existing"));
+		UE_LOG(LogTemp, Warning, TEXT("Save game not existing"));
 	}
 }
 
@@ -174,6 +174,6 @@ void UTAGameInstance::LoadSettings(FGraphicsSettingsStruct &GraphicsSettings, FS
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Save not existing"));
+		UE_LOG(LogTemp, Warning, TEXT("Save settings not existing"));
 	}
 }

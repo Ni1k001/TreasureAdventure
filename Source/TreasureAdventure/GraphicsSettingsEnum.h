@@ -16,5 +16,5 @@ enum class GraphicsSettingsEnum : uint8
 	EPostProcessing 	UMETA(DisplayName = "PostProcessing"),
 	EShadowsQuality 	UMETA(DisplayName = "ShadowsQuality"),
 	ETexturesQuality 	UMETA(DisplayName = "TexturesQuality"),
-	EPEffectsQuality 	UMETA(DisplayName = "EffectsQuality"),
+	EEffectsQuality 	UMETA(DisplayName = "EffectsQuality"),
 };
