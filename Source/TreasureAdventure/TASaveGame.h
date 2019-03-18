@@ -38,6 +38,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Gameplay)
 		int LifeCount;
 
+	UPROPERTY(VisibleAnywhere, Category = Gameplay)
+		FString CurrentLevel;
+
 	UPROPERTY(VisibleAnywhere, Category = Level)
 		TMap<FString, int32> LevelCollectedStarFlag;
 

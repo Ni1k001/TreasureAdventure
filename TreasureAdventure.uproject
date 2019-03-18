@@ -16,17 +16,17 @@
 	"Plugins": [
 		{
 			"Name": "ConsoleEnhanced",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/86123c85a4474d609c5cef8a7fc5786b"
 		},
 		{
 			"Name": "ProductivityTools",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/8beef99c4399462189d66689e2b48475"
 		},
 		{
 			"Name": "RichTextBlockInlineDecorator",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/OfferIDGoesHere"
 		}
 	],

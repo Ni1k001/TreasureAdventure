@@ -78,6 +78,16 @@ int UTAGameInstance::GetLifeCount()
 	return LifeCount;
 }
 
+void UTAGameInstance::SetCurrentLevel(FString level)
+{
+	CurrentLevel = level;
+}
+
+FString UTAGameInstance::GetCurrentLevel()
+{
+	return CurrentLevel;
+}
+
 void UTAGameInstance::SaveData()
 {
 	UTASaveGame* SaveGameInstance = Cast<UTASaveGame>(UGameplayStatics::CreateSaveGameObject(UTASaveGame::StaticClass()));
@@ -87,6 +97,7 @@ void UTAGameInstance::SaveData()
 	SaveGameInstance->TotalCoinCount = GetTotalCoinCount();
 	SaveGameInstance->TotalStarCount = GetTotalStarCount();
 	SaveGameInstance->LifeCount = GetLifeCount();
+	SaveGameInstance->CurrentLevel = CurrentLevel;
 
 	for (int i = 1; i <= 2; i++)
 	{
@@ -115,6 +126,7 @@ void UTAGameInstance::LoadData()
 			TotalCoinCount = LoadGameInstance->TotalCoinCount;
 			TotalStarCount = LoadGameInstance->TotalStarCount;
 			LifeCount = LoadGameInstance->LifeCount;
+			CurrentLevel = LoadGameInstance->CurrentLevel;
 
 			UE_LOG(LogTemp, Warning, TEXT("Loaded Game"));
 

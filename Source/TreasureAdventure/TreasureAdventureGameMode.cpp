@@ -14,6 +14,9 @@ ATreasureAdventureGameMode::ATreasureAdventureGameMode()
 	//	DefaultPawnClass = PlayerPawnBPClass.Class;
 	//}
 
+
+	
+
 	DefaultPawnClass = APlayerCharacter::StaticClass();
 }
 

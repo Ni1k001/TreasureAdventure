@@ -12,6 +12,7 @@ UTASaveGame::UTASaveGame()
 	TotalCoinCount = 0;
 	TotalStarCount = 0;
 	LifeCount = 0;
+	CurrentLevel = "Level1";
 
 	for (int i = 1; i <= 2; i++)
 	{

@@ -23,6 +23,7 @@ private:
 	int CurrentStarCount = 0;
 	int TotalStarCount = 0;
 	int LifeCount = 3;
+	FString CurrentLevel = "Level1";
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Level)
@@ -38,10 +39,10 @@ public:
 	UFUNCTION()
 		void UpdateCoinCount();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		int GetCurrentCoinCount();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		int GetTotalCoinCount();
 
 	UFUNCTION()
@@ -50,14 +51,20 @@ public:
 	UFUNCTION()
 		int GetCurrentStarCount();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		int GetTotalStarCount();
 
 	UFUNCTION()
 		void UpdateLifeCount(int value);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		int GetLifeCount();
+
+	UFUNCTION(BlueprintCallable)
+		void SetCurrentLevel(FString level);
+
+	UFUNCTION(BlueprintCallable)
+		FString GetCurrentLevel();
 
 	UFUNCTION(BlueprintCallable)
 		void SaveData();
