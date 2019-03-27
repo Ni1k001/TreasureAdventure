@@ -46,6 +46,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Level)
 		TMap<FString, bool> LevelAvailability;
+
+private:
+	int MapCount = 1;
 };
 
 

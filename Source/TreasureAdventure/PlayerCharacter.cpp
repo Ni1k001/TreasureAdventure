@@ -6,12 +6,22 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "TAGameInstance.h"
+#include "TreasureAdventureGameMode.h"
+
+#define COLLISION_PLAYER ECollisionChannel::ECC_GameTraceChannel1
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Set collision capsule
+	GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Player");
+	GetCapsuleComponent()->BodyInstance.SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics, true);
+	GetCapsuleComponent()->SetCollisionObjectType(COLLISION_PLAYER);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_PLAYER, ECollisionResponse::ECR_Block);
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -69,6 +79,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
+
+	// Set up action key bindings
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCharacter::PauseGame);
 }
 
 void APlayerCharacter::TurnAtRate(float Rate)
@@ -162,4 +175,22 @@ int APlayerCharacter::GetCoinCount()
 	}
 
 	return 0;
+}
+
+void APlayerCharacter::PauseGame()
+{
+	ATreasureAdventureGameMode* GameMode = (ATreasureAdventureGameMode*)GetWorld()->GetAuthGameMode();
+
+	FStringClassReference MyWidgetClassRef(TEXT("/Game/Menu/W_PauseMenu.W_PauseMenu"));
+	UClass* MyWidgetClass = MyWidgetClassRef.TryLoadClass<UUserWidget>();
+
+	UE_LOG(LogTemp, Warning, TEXT("TEST1"));
+
+	if (MyWidgetClass != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TEST2"));
+
+		UUserWidget *widget = CreateWidget<UUserWidget>(GetWorld()->GetFirstPlayerController(), MyWidgetClass);
+		widget->AddToViewport();
+	}
 }

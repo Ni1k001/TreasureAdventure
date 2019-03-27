@@ -14,7 +14,12 @@ void UTAGameInstance::Init()
 
 void UTAGameInstance::OnStart()
 {
-	for (int i = 1; i <= 2; i++)
+	/*****************************************************************/
+	LevelCollectedStarFlag.Add("LevelTest", 0);
+	LevelAvailability.Add("LevelTest", true);
+	/*****************************************************************/
+
+	for (int i = 1; i <= MapCount; i++)
 	{
 		LevelCollectedStarFlag.Add("Level" + FString::FromInt(i), 0);
 		LevelAvailability.Add("Level" + FString::FromInt(i), false);
@@ -55,7 +60,11 @@ void UTAGameInstance::UpdateStarCount(int StarID)
 	//FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
 	//UE_LOG(LogTemp, Warning, TEXT("%s"), *LevelName);
 
-	LevelCollectedStarFlag[UGameplayStatics::GetCurrentLevelName(this)] += StarID;
+	for (auto& Elem : LevelCollectedStarFlag)
+	{
+		if (UGameplayStatics::GetCurrentLevelName(this) == Elem.Key)
+			LevelCollectedStarFlag[UGameplayStatics::GetCurrentLevelName(this)] += StarID;
+	}
 }
 
 int UTAGameInstance::GetCurrentStarCount()
@@ -94,12 +103,13 @@ void UTAGameInstance::SaveData()
 	
 	SaveGameInstance->SaveSlotName = "Slot1";
 	SaveGameInstance->UserIndex = 0;
+	SaveGameInstance->CurrentCoinCount = GetCurrentCoinCount();
 	SaveGameInstance->TotalCoinCount = GetTotalCoinCount();
 	SaveGameInstance->TotalStarCount = GetTotalStarCount();
 	SaveGameInstance->LifeCount = GetLifeCount();
 	SaveGameInstance->CurrentLevel = CurrentLevel;
 
-	for (int i = 1; i <= 2; i++)
+	for (int i = 1; i <= MapCount; i++)
 	{
 		SaveGameInstance->LevelCollectedStarFlag.FindOrAdd("Level" + FString::FromInt(i));
 		SaveGameInstance->LevelAvailability.FindOrAdd("Level" + FString::FromInt(i));
@@ -123,6 +133,7 @@ void UTAGameInstance::LoadData()
 		LoadGameInstance = Cast<UTASaveGame>(UGameplayStatics::LoadGameFromSlot(LoadGameInstance->SaveSlotName, LoadGameInstance->UserIndex));
 		if (LoadGameInstance)
 		{
+			CurrentCoinCount = LoadGameInstance->CurrentCoinCount;
 			TotalCoinCount = LoadGameInstance->TotalCoinCount;
 			TotalStarCount = LoadGameInstance->TotalStarCount;
 			LifeCount = LoadGameInstance->LifeCount;
@@ -134,7 +145,7 @@ void UTAGameInstance::LoadData()
 			UE_LOG(LogTemp, Warning, TEXT("Total Star Count: %d"), GetTotalStarCount());
 			UE_LOG(LogTemp, Warning, TEXT("Life Count: %d"), GetLifeCount());
 
-			for (int i = 1; i <= 2; i++)
+			for (int i = 1; i <= MapCount; i++)
 			{
 				LevelCollectedStarFlag.FindOrAdd("Level" + FString::FromInt(i));
 				LevelAvailability.FindOrAdd("Level" + FString::FromInt(i));

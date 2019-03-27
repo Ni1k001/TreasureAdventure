@@ -77,4 +77,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void LoadSettings(FGraphicsSettingsStruct &GraphicsSettings, FSoundSettingsStruct &SoundSettings, FControlsSettingsStruct &ControlsSettings);
+
+private:
+	int MapCount = 1;
 };

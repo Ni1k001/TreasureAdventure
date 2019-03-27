@@ -42,6 +42,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config, meta = (ClampMin = "0", ClampMax = "7", UIMin = "0", UIMax = "7"))
 		int StarID;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
+		FRotator RotationRate;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

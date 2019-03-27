@@ -14,13 +14,18 @@ UTASaveGame::UTASaveGame()
 	LifeCount = 0;
 	CurrentLevel = "Level1";
 
-	for (int i = 1; i <= 2; i++)
+	/*****************************************************************/
+	LevelCollectedStarFlag.Add("LevelTest", 0);
+	LevelAvailability.Add("LevelTest", true);
+	/*****************************************************************/
+
+	for (int i = 1; i <= MapCount; i++)
 	{
 		LevelCollectedStarFlag.Add("Level" + FString::FromInt(i), 0);
-		LevelAvailability.Add("Level" + FString::FromInt(i), 0);
+		LevelAvailability.Add("Level" + FString::FromInt(i), false);
 	}
 
-	LevelAvailability["Level1"] = 1;
+	LevelAvailability["Level1"] = true;
 }
 
 UTASaveSettings::UTASaveSettings()

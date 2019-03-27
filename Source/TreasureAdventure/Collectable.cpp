@@ -12,19 +12,22 @@ ACollectable::ACollectable()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
-	CollisionComp->SetSphereRadius(30.f);
-	CollisionComp->SetHiddenInGame(false);
-
-	RootComponent = CollisionComp;
-
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetSimulatePhysics(false);
-	Mesh->SetupAttachment(RootComponent);
+	//Mesh->SetupAttachment(RootComponent);
+
+	RootComponent = Mesh;
+
+	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
+	CollisionComp->SetSphereRadius(30.f);
+	CollisionComp->SetupAttachment(RootComponent);
+	CollisionComp->SetHiddenInGame(false);
 
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ACollectable::BeginOverlap);
 
 	StarID = 0;
+
+	RotationRate = FRotator(0.f, 0.f, 0.f);
 }
 
 // Called when the game starts or when spawned
@@ -33,7 +36,7 @@ void ACollectable::BeginPlay()
 	Super::BeginPlay();
 
 	CollisionComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	//Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 }
 
 // Called every frame
@@ -41,7 +44,7 @@ void ACollectable::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Mesh->AddRelativeRotation(FRotator(0.f, 0.5f, 0.f));
+	Mesh->AddRelativeRotation(RotationRate);
 }
 
 void ACollectable::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
@@ -53,7 +56,7 @@ void ACollectable::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 		if (CollectableType == ECollectable::ECoin)
 			Player->UpdateCoinCount();
-		else
+		else if (CollectableType == ECollectable::EStar)
 			GI->UpdateStarCount(StarID);
 		
 		Destroy();
