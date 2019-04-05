@@ -152,9 +152,26 @@ void UTAGameInstance::LoadData()
 
 				LevelCollectedStarFlag["Level" + FString::FromInt(i)] = LoadGameInstance->LevelCollectedStarFlag["Level" + FString::FromInt(i)];
 				LevelAvailability["Level" + FString::FromInt(i)] = LoadGameInstance->LevelAvailability["Level" + FString::FromInt(i)];
+			}
 
-				UE_LOG(LogTemp, Warning, TEXT("%s Collected Star Flag: %d"), LevelCollectedStarFlag.FindKey(i), LevelCollectedStarFlag["Level" + FString::FromInt(i)]);
-				UE_LOG(LogTemp, Warning, TEXT("%s Availability: %d"), LevelAvailability.FindKey(i), LevelAvailability["Level" + FString::FromInt(i)]);
+			UE_LOG(LogTemp, Warning, TEXT("LEVELS COLLECTED STARS:"));
+
+			for (auto& LCSF : LevelCollectedStarFlag)
+			{
+				FString Key = LCSF.Key;
+				int32 Value = LCSF.Value;
+
+				UE_LOG(LogTemp, Warning, TEXT("%s: %d"), *Key, Value);
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("LEVELS AVAILABILITY:"));
+
+			for (auto& LAF : LevelAvailability)
+			{
+				FString Key = LAF.Key;
+				int32 Value = LAF.Value;
+
+				UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *Key, (Value ? TEXT("True") : TEXT("False")));
 			}
 		}
 	}

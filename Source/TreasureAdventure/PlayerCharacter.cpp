@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "TAGameInstance.h"
+#include "Blueprint/UserWidget.h"
 #include "TreasureAdventureGameMode.h"
 
 #define COLLISION_PLAYER ECollisionChannel::ECC_GameTraceChannel1
@@ -81,7 +82,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
 
 	// Set up action key bindings
-	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCharacter::PauseGame);
+	//PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCharacter::PauseGame);
 }
 
 void APlayerCharacter::TurnAtRate(float Rate)
@@ -175,22 +176,4 @@ int APlayerCharacter::GetCoinCount()
 	}
 
 	return 0;
-}
-
-void APlayerCharacter::PauseGame()
-{
-	ATreasureAdventureGameMode* GameMode = (ATreasureAdventureGameMode*)GetWorld()->GetAuthGameMode();
-
-	FStringClassReference MyWidgetClassRef(TEXT("/Game/Menu/W_PauseMenu.W_PauseMenu"));
-	UClass* MyWidgetClass = MyWidgetClassRef.TryLoadClass<UUserWidget>();
-
-	UE_LOG(LogTemp, Warning, TEXT("TEST1"));
-
-	if (MyWidgetClass != nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("TEST2"));
-
-		UUserWidget *widget = CreateWidget<UUserWidget>(GetWorld()->GetFirstPlayerController(), MyWidgetClass);
-		widget->AddToViewport();
-	}
 }

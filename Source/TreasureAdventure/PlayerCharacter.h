@@ -64,9 +64,6 @@ public:
 	UFUNCTION()
 		int GetCoinCount();
 
-	UFUNCTION()
-		void PauseGame();
-
 private:
 	UPROPERTY(EditAnywhere, Category = "Health")
 		int Health;
