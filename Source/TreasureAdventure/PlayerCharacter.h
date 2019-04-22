@@ -3,6 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine.h"
+#include "TreasureAdventure.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
@@ -52,16 +55,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void UpdateHealth(int Value);
+	UFUNCTION(BlueprintCallable)
+		void UpdateHealth(int Value);
 
-	int GetHealth();
+	UFUNCTION(BlueprintCallable)
+		int GetHealth();
 	
-	int GetMaxHealth();
+	UFUNCTION(BlueprintCallable)
+		int GetMaxHealth();
 
 	UFUNCTION()
 		void UpdateCoinCount();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		int GetCoinCount();
 
 private:
@@ -70,4 +76,14 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Health")
 		int MaxHealth;
+
+	UPROPERTY(EditAnywhere, Category = "Health")
+		float InvulnerableTime;
+
+	FTimerHandle DamageTimer;
+
+	void AllowDamage();
+
+protected:
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
