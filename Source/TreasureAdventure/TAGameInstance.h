@@ -79,5 +79,5 @@ public:
 		void LoadSettings(FGraphicsSettingsStruct &GraphicsSettings, FSoundSettingsStruct &SoundSettings, FControlsSettingsStruct &ControlsSettings);
 
 private:
-	int MapCount = 1;
+	int MapCount = 2;
 };
