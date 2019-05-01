@@ -11,12 +11,12 @@ UTASaveGame::UTASaveGame()
 	CurrentCoinCount = 0;
 	TotalCoinCount = 0;
 	TotalStarCount = 0;
-	LifeCount = 0;
+	LifeCount = 3;
 	CurrentLevel = "Level1";
 
 	/*****************************************************************/
-	LevelCollectedStarFlag.Add("LevelTest", 0);
-	LevelAvailability.Add("LevelTest", true);
+	//LevelCollectedStarFlag.Add("LevelTest", 0);
+	//LevelAvailability.Add("LevelTest", true);
 	/*****************************************************************/
 
 	for (int i = 1; i <= MapCount; i++)

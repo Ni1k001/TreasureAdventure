@@ -14,9 +14,16 @@ void UTAGameInstance::Init()
 
 void UTAGameInstance::OnStart()
 {
+	CurrentCoinCount = 0;
+	TotalCoinCount = 0;
+	CurrentStarCount = 0;
+	TotalStarCount = 0;
+	LifeCount = 3;
+	CurrentLevel = "Level1";
+
 	/*****************************************************************/
-	LevelCollectedStarFlag.Add("LevelTest", 0);
-	LevelAvailability.Add("LevelTest", true);
+	//LevelCollectedStarFlag.Add("LevelTest", 0);
+	//LevelAvailability.Add("LevelTest", true);
 	/*****************************************************************/
 
 	for (int i = 1; i <= MapCount; i++)
@@ -56,9 +63,6 @@ void UTAGameInstance::UpdateStarCount(int StarID)
 {
 	CurrentStarCount++;
 	TotalStarCount++;
-
-	//FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
-	//UE_LOG(LogTemp, Warning, TEXT("%s"), *LevelName);
 
 	for (auto& Elem : LevelCollectedStarFlag)
 	{
@@ -121,7 +125,7 @@ void UTAGameInstance::SaveData()
 
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 
-	UE_LOG(LogTemp, Warning, TEXT("Saved Game"));
+	UE_LOG(LogTemp, Warning, TEXT("Game saved"));
 }
 
 void UTAGameInstance::LoadData()
@@ -139,7 +143,7 @@ void UTAGameInstance::LoadData()
 			LifeCount = LoadGameInstance->LifeCount;
 			CurrentLevel = LoadGameInstance->CurrentLevel;
 
-			UE_LOG(LogTemp, Warning, TEXT("Loaded Game"));
+			UE_LOG(LogTemp, Warning, TEXT("Game loaded"));
 
 			UE_LOG(LogTemp, Warning, TEXT("Total Coin Count: %d"), GetTotalCoinCount());
 			UE_LOG(LogTemp, Warning, TEXT("Total Star Count: %d"), GetTotalStarCount());
@@ -177,7 +181,7 @@ void UTAGameInstance::LoadData()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Save game not existing"));
+		UE_LOG(LogTemp, Warning, TEXT("Game save does not exist"));
 	}
 }
 
@@ -193,7 +197,7 @@ void UTAGameInstance::SaveSettings(FGraphicsSettingsStruct GraphicsSettings, FSo
 
 	UGameplayStatics::SaveGameToSlot(SaveSettingsInstance, SaveSettingsInstance->SaveSlotName, SaveSettingsInstance->UserIndex);
 
-	UE_LOG(LogTemp, Warning, TEXT("Saved Settings"));
+	UE_LOG(LogTemp, Warning, TEXT("Settings saved"));
 }
 
 void UTAGameInstance::LoadSettings(FGraphicsSettingsStruct &GraphicsSettings, FSoundSettingsStruct &SoundSettings, FControlsSettingsStruct &ControlsSettings)
@@ -209,11 +213,30 @@ void UTAGameInstance::LoadSettings(FGraphicsSettingsStruct &GraphicsSettings, FS
 			SoundSettings = LoadSettingsInstance->SoundSettings;
 			ControlsSettings = LoadSettingsInstance->ControlsSettings;
 
-			UE_LOG(LogTemp, Warning, TEXT("Loaded Settings"));
+			UE_LOG(LogTemp, Warning, TEXT("Settings loaded"));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Save settings not existing"));
+		UE_LOG(LogTemp, Warning, TEXT("Settings save does not exist"));
 	}
+}
+
+void UTAGameInstance::ResetSave()
+{
+	CurrentCoinCount = 0;
+	TotalCoinCount = 0;
+	TotalStarCount = 0;
+	LifeCount = 3;
+	CurrentLevel = "Level1";
+
+	for (int i = 1; i <= MapCount; i++)
+	{
+		LevelCollectedStarFlag["Level" + FString::FromInt(i)] = 0;
+		LevelAvailability["Level" + FString::FromInt(i)] = false;
+	}
+
+	LevelAvailability["Level1"] = true;
+
+	UE_LOG(LogTemp, Warning, TEXT("Game save reseted"))
 }

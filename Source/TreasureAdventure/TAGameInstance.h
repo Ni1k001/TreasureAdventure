@@ -18,12 +18,12 @@ class TREASUREADVENTURE_API UTAGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 private:
-	int CurrentCoinCount = 0;
-	int TotalCoinCount = 0;
-	int CurrentStarCount = 0;
-	int TotalStarCount = 0;
-	int LifeCount = 3;
-	FString CurrentLevel = "Level1";
+	int CurrentCoinCount;
+	int TotalCoinCount;
+	int CurrentStarCount;
+	int TotalStarCount;
+	int LifeCount;
+	FString CurrentLevel;
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Level)
@@ -77,6 +77,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void LoadSettings(FGraphicsSettingsStruct &GraphicsSettings, FSoundSettingsStruct &SoundSettings, FControlsSettingsStruct &ControlsSettings);
+
+	UFUNCTION(BlueprintCallable)
+		void ResetSave();
 
 private:
 	int MapCount = 2;

@@ -28,6 +28,10 @@
 			"Name": "RichTextBlockInlineDecorator",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/OfferIDGoesHere"
+		},
+		{
+			"Name": "Niagara",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
