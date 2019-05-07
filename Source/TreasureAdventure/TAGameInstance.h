@@ -82,5 +82,5 @@ public:
 		void ResetSave();
 
 private:
-	int MapCount = 2;
+	int MapCount = 3;
 };
