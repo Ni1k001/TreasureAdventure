@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		FRotator RotationRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
+		class USoundBase* CollectSound;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -175,10 +175,18 @@ void APlayerCharacter::UpdateCoinCount()
 
 	if (GI)
 	{
+
 		GI->UpdateCoinCount();
 	}
 
-	GetCoinCount();
+	if (GetCoinCount() == 0)
+	{
+		if (LifeUpSound)
+		{
+			UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, LifeUpSound);
+			AudioComponent->Play();
+		}
+	}
 }
 
 int APlayerCharacter::GetCoinCount()

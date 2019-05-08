@@ -59,6 +59,12 @@ void ACollectable::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		else if (CollectableType == ECollectable::EStar)
 			GI->UpdateStarCount(StarID);
 		
+		if (CollectSound)
+		{
+			UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, CollectSound);
+			AudioComponent->Play();
+		}
+
 		Destroy();
 	}
 }
