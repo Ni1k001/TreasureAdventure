@@ -39,7 +39,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Config)
 		UStaticMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config, meta = (ClampMin = "0", ClampMax = "7", UIMin = "0", UIMax = "7"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config, meta = (ClampMin = "0", ClampMax = "4", UIMin = "0", UIMax = "4"))
 		int StarID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
