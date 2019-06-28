@@ -15,17 +15,8 @@ class ATreasureAdventureGameMode : public AGameModeBase
 public:
 	ATreasureAdventureGameMode();
 
-	UFUNCTION(BlueprintCallable, Category = "UMG")
-		void ChangeMenuWidget(TSubclassOf<UUserWidget> Widget);
-
 protected:
 	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UMG")
-		TSubclassOf<UUserWidget> StartingWidgetClass;
-
-	UPROPERTY()
-		UUserWidget* CurrentWidget;
 };
 
 

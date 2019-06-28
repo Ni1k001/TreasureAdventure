@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayerCharacter.h"
+#include "Enemy.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -14,6 +15,7 @@
 #include "Kismet/KismetMathLibrary.h"
 
 #define COLLISION_PLAYER ECollisionChannel::ECC_GameTraceChannel1
+#define COLLISION_ENEMY ECollisionChannel::ECC_GameTraceChannel2
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -27,6 +29,7 @@ APlayerCharacter::APlayerCharacter()
 	GetCapsuleComponent()->SetCollisionObjectType(COLLISION_PLAYER);
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_PLAYER, ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_ENEMY, ECollisionResponse::ECR_Overlap);
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -53,6 +56,9 @@ APlayerCharacter::APlayerCharacter()
 
 	bCanBeDamaged = true;
 
+	// Configure Overlapping
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapEnd);
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -175,7 +181,6 @@ void APlayerCharacter::UpdateCoinCount()
 
 	if (GI)
 	{
-
 		GI->UpdateCoinCount();
 	}
 
@@ -222,6 +227,7 @@ float APlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 			bCanBeDamaged = false;
 			GetWorldTimerManager().SetTimer(DamageTimer, this, &APlayerCharacter::AllowDamage, 1.f, false, InvulnerableTime);
+			//								Timer,		 User, Function,					 , Rate, loop, firstDelay);
 
 			// If the damage depletes our health set our lifespan to zero - which will destroy the actor  
 			if (Health <= 0)
@@ -234,4 +240,23 @@ float APlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	}
 
 	return ActualDamage;
+}
+
+void APlayerCharacter::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	Super::OnActorBeginOverlap;
+
+	UE_LOG(LogTemp, Warning, TEXT("Overlaping"));
+
+	if (OtherActor && (OtherActor != this) && OtherComp && OtherActor->GetClass()->IsChildOf(AEnemy::StaticClass()))
+		UE_LOG(LogTemp, Warning, TEXT("Overlapping enemy"));
+}
+
+void APlayerCharacter::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	Super::OnActorEndOverlap;
+
+	ClearComponentOverlaps();
+
+	UE_LOG(LogTemp, Warning, TEXT("Stopped Overlaping"));
 }

@@ -4,6 +4,7 @@
 #include "TASaveGame.h"
 #include "LMHESettingsEnum.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "Engine.h"
 
 void UTAGameInstance::Init()
@@ -20,6 +21,7 @@ void UTAGameInstance::OnStart()
 	TotalStarCount = 0;
 	LifeCount = 3;
 	CurrentLevel = "Level1";
+	CurrentStreamingLevel = "L_MainMenu";
 
 	/*****************************************************************/
 	//LevelCollectedStarFlag.Add("LevelTest", 0);
@@ -66,8 +68,8 @@ void UTAGameInstance::UpdateStarCount(int StarID)
 
 	for (auto& Elem : LevelCollectedStarFlag)
 	{
-		if (UGameplayStatics::GetCurrentLevelName(this) == Elem.Key)
-			LevelCollectedStarFlag[UGameplayStatics::GetCurrentLevelName(this)] += StarID;
+		if (GetCurrentLevel() == Elem.Key)
+			LevelCollectedStarFlag[GetCurrentLevel()] += StarID;
 	}
 }
 
@@ -99,6 +101,17 @@ void UTAGameInstance::SetCurrentLevel(FString level)
 FString UTAGameInstance::GetCurrentLevel()
 {
 	return CurrentLevel;
+}
+
+void UTAGameInstance::SetCurrentStreamingLevel(FName level)
+{
+	CurrentStreamingLevel = level;
+	OnLevelStreamingChange();
+}
+
+FName UTAGameInstance::GetCurrentStreamingLevel()
+{
+	return CurrentStreamingLevel;
 }
 
 void UTAGameInstance::SaveData()
@@ -239,4 +252,13 @@ void UTAGameInstance::ResetSave()
 	LevelAvailability["Level1"] = true;
 
 	UE_LOG(LogTemp, Warning, TEXT("Game save reseted"))
+}
+
+FString UTAGameInstance::GetAppVersion()
+{
+	FString AppVersion;
+
+	GConfig->GetString(TEXT("/Script/EngineSettings.GeneralProjectSettings"), TEXT("ProjectVersion"), AppVersion, GGameIni);
+
+	return AppVersion;
 }

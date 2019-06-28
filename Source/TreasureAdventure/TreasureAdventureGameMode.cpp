@@ -14,24 +14,4 @@ ATreasureAdventureGameMode::ATreasureAdventureGameMode()
 void ATreasureAdventureGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	ChangeMenuWidget(StartingWidgetClass);
-}
-
-void ATreasureAdventureGameMode::ChangeMenuWidget(TSubclassOf<UUserWidget> Widget)
-{
-	if (CurrentWidget != nullptr)
-	{
-		CurrentWidget->RemoveFromViewport();
-		CurrentWidget = nullptr;
-	}
-
-	if (Widget != nullptr)
-	{
-		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), Widget);
-
-		if (CurrentWidget != nullptr)
-		{
-			CurrentWidget->AddToViewport();
-		}
-	}
 }

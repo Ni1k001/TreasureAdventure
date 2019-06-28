@@ -24,6 +24,7 @@ private:
 	int TotalStarCount;
 	int LifeCount;
 	FString CurrentLevel;
+	FName CurrentStreamingLevel;
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Level)
@@ -67,6 +68,15 @@ public:
 		FString GetCurrentLevel();
 
 	UFUNCTION(BlueprintCallable)
+		void SetCurrentStreamingLevel(FName level);
+
+	UFUNCTION(BlueprintCallable)
+		FName GetCurrentStreamingLevel();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnLevelStreamingChange();
+
+	UFUNCTION(BlueprintCallable)
 		void SaveData();
 
 	UFUNCTION(BlueprintCallable)
@@ -80,6 +90,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void ResetSave();
+
+	UFUNCTION(BlueprintCallable)
+		static FString GetAppVersion();
 
 private:
 	int MapCount = 3;
