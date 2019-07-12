@@ -7,6 +7,16 @@
 #include "Runtime/Engine/Classes/Engine/TargetPoint.h"
 #include "Enemy.generated.h"
 
+UENUM(BlueprintType)
+namespace EEnemyType
+{
+	enum EnemyType
+	{
+		EPatrol			UMETA(DisplayName = "Patrol"),
+		ERush			UMETA(DisplayName = "Rush"),
+	};
+}
+
 UCLASS()
 class TREASUREADVENTURE_API AEnemy : public ACharacter
 {
@@ -15,6 +25,12 @@ class TREASUREADVENTURE_API AEnemy : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AEnemy();
+
+	UPROPERTY(EditAnywhere)
+		class UBillboardComponent* Waypoint1;
+
+	UPROPERTY(EditAnywhere)
+		class UBillboardComponent* Waypoint2;
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,12 +49,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 		int GetMaxHealth();
 
+	UFUNCTION(BlueprintPure)
+		FVector GetWaypoint1();
+
+	UFUNCTION(BlueprintPure)
+		FVector GetWaypoint2();
+
+	UFUNCTION(BlueprintCallable)
+		EEnemyType::EnemyType GetEnemyType();
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Health")
 		int Health;
 
 	UPROPERTY(EditAnywhere, Category = "Health")
 		int MaxHealth;
+
+	UPROPERTY(EditAnywhere, Category = Config)
+		TEnumAsByte<EEnemyType::EnemyType> EnemyType;
 
 protected:
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

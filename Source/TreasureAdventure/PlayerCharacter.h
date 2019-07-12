@@ -81,9 +81,16 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Health")
 		float InvulnerableTime;
 
+	UPROPERTY(EditAnywhere, Category = "Health")
+		float BlinkingTime;;
+
 	FTimerHandle DamageTimer;
 
+	FTimerHandle BlinkingTimer;
+
 	void AllowDamage();
+
+	void Blink();
 
 protected:
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

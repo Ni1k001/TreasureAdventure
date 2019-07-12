@@ -52,7 +52,8 @@ APlayerCharacter::APlayerCharacter()
 	Health = 1;
 	MaxHealth = 2;
 
-	InvulnerableTime = 1.f;
+	InvulnerableTime = 1.6f;
+	BlinkingTime = 0.25f;
 
 	bCanBeDamaged = true;
 
@@ -211,6 +212,12 @@ void APlayerCharacter::AllowDamage()
 {
 	UE_LOG(LogTemp, Warning, TEXT("DAMAGE ALLOWED"));
 	bCanBeDamaged = true;
+	GetWorldTimerManager().ClearTimer(BlinkingTimer);
+}
+
+void APlayerCharacter::Blink()
+{
+	GetMesh()->ToggleVisibility();
 }
 
 float APlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -228,6 +235,8 @@ float APlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 			bCanBeDamaged = false;
 			GetWorldTimerManager().SetTimer(DamageTimer, this, &APlayerCharacter::AllowDamage, 1.f, false, InvulnerableTime);
 			//								Timer,		 User, Function,					 , Rate, loop, firstDelay);
+
+			GetWorldTimerManager().SetTimer(BlinkingTimer, this, &APlayerCharacter::Blink, BlinkingTime, true);
 
 			// If the damage depletes our health set our lifespan to zero - which will destroy the actor  
 			if (Health <= 0)

@@ -8,6 +8,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/BillboardComponent.h"
 
 #define COLLISION_PLAYER ECollisionChannel::ECC_GameTraceChannel1
 #define COLLISION_ENEMY ECollisionChannel::ECC_GameTraceChannel2
@@ -29,10 +30,6 @@ AEnemy::AEnemy()
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
-
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -45,13 +42,27 @@ AEnemy::AEnemy()
 	GetCharacterMovement()->AirControl = 0.1f;
 
 	Health = 1;
-	MaxHealth = 2;
+	MaxHealth = 1;
 
 	bCanBeDamaged = true;
 
 	// Configure Overlapping
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd);
+
+	static ConstructorHelpers::FObjectFinder<UTexture2D> TargetIcon(TEXT("/Engine/EditorMaterials/TargetIcon.TargetIcon"));
+
+	Waypoint1 = CreateDefaultSubobject<UBillboardComponent>(TEXT("Waypoint1"));
+	Waypoint1->SetHiddenInGame(false, true);
+	Waypoint1->AttachTo(RootComponent);
+	Waypoint1->SetAbsolute(true, false, true);
+	Waypoint1->SetSprite(TargetIcon.Object);
+
+	Waypoint2 = CreateDefaultSubobject<UBillboardComponent>(TEXT("Waypoint2"));
+	Waypoint2->SetHiddenInGame(false, true);
+	Waypoint2->AttachTo(RootComponent);
+	Waypoint2->SetAbsolute(true, false, true);
+	Waypoint2->SetSprite(TargetIcon.Object);
 }
 
 // Called when the game starts or when spawned
@@ -72,23 +83,16 @@ void AEnemy::UpdateHealth(int Value)
 {
 	if (Health + Value > MaxHealth)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Health is Max(%d) - %d"), GetMaxHealth(), GetHealth());
+		UE_LOG(LogTemp, Warning, TEXT("Enemy: Health is Max(%d) - %d"), GetMaxHealth(), GetHealth());
 	}
 	else if (Health + Value < 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player has no health - %d"), GetHealth());
+		UE_LOG(LogTemp, Warning, TEXT("Enemy has no health - %d"), GetHealth());
 	}
 	else
 	{
 		Health += Value;
-		UE_LOG(LogTemp, Warning, TEXT("Health = %d"), GetHealth());
-	}
-
-	if (Health == 2)
-		SetActorRelativeScale3D(FVector(0.7f, 0.7f, 0.7f));
-	else if (Health == 1)
-	{
-		SetActorRelativeScale3D(FVector(0.6f, 0.6f, 0.6f));
+		UE_LOG(LogTemp, Warning, TEXT("Enemy: Health = %d"), GetHealth());
 	}
 }
 
@@ -100,6 +104,21 @@ int AEnemy::GetHealth()
 int AEnemy::GetMaxHealth()
 {
 	return MaxHealth;
+}
+
+FVector AEnemy::GetWaypoint1()
+{
+	return Waypoint1->GetComponentLocation();
+}
+
+FVector AEnemy::GetWaypoint2()
+{
+	return Waypoint2->GetComponentLocation();
+}
+
+EEnemyType::EnemyType AEnemy::GetEnemyType()
+{
+	return EnemyType;
 }
 
 float AEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
