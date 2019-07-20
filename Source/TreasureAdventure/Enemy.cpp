@@ -30,7 +30,7 @@ AEnemy::AEnemy()
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// Don't rotate when the controller rotates. Let that just affect the camera.
+	// Don't rotate when the controller rotates.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -44,6 +44,7 @@ AEnemy::AEnemy()
 	Health = 1;
 	MaxHealth = 1;
 
+	bCanRotate = true;
 	bCanBeDamaged = true;
 
 	// Configure Overlapping
@@ -69,7 +70,7 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -121,6 +122,31 @@ EEnemyType::EnemyType AEnemy::GetEnemyType()
 	return EnemyType;
 }
 
+void AEnemy::SetCanRotate(bool CanRotate)
+{
+	if (bCanRotate)
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
+		GetCharacterMovement()->bConstrainToPlane = true;
+		GetCharacterMovement()->bSnapToPlaneAtStart = true;
+		GetCharacterMovement()->bIgnoreBaseRotation = false;
+	}
+	else
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 0.f);
+		GetCharacterMovement()->bConstrainToPlane = true;
+		GetCharacterMovement()->bSnapToPlaneAtStart = true;
+		GetCharacterMovement()->bIgnoreBaseRotation = true;
+	}
+}
+
+bool AEnemy::GetCanRotate()
+{
+	return bCanRotate;
+}
+
 float AEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	// Call the base class - this will tell us how much damage to apply  
@@ -167,3 +193,16 @@ void AEnemy::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActo
 
 	UE_LOG(LogTemp, Warning, TEXT("Stopped Overlaping"));
 }
+
+#if WITH_EDITOR
+void AEnemy::PostEditChangeProperty(struct FPropertyChangedEvent& e)
+{
+	FName PropertyName = (e.Property != NULL) ? e.Property->GetFName() : NAME_None;
+
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AEnemy, bCanRotate))
+	{
+		SetCanRotate(bCanRotate);
+	}
+	Super::PostEditChangeProperty(e);
+}
+#endif

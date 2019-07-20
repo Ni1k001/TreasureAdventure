@@ -58,6 +58,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 		EEnemyType::EnemyType GetEnemyType();
 
+protected:
+
+	UFUNCTION()
+		void SetCanRotate(bool CanRotate);
+
+	UFUNCTION()
+		bool GetCanRotate();
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Health")
 		int Health;
@@ -68,6 +76,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Config)
 		TEnumAsByte<EEnemyType::EnemyType> EnemyType;
 
+	UPROPERTY(EditAnywhere, Category = Config)
+		bool bCanRotate;
+
 protected:
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -76,4 +87,8 @@ protected:
 
 	UFUNCTION()
 		void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e);
+#endif
 };

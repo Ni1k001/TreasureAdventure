@@ -74,7 +74,6 @@ bool ACollectable::CanEditChange(const UProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
 
-	// Can we edit flower color?
 	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(ACollectable, StarID))
 	{
 		return CollectableType == ECollectable::EStar;
