@@ -54,16 +54,28 @@ AEnemy::AEnemy()
 	static ConstructorHelpers::FObjectFinder<UTexture2D> TargetIcon(TEXT("/Engine/EditorMaterials/TargetIcon.TargetIcon"));
 
 	Waypoint1 = CreateDefaultSubobject<UBillboardComponent>(TEXT("Waypoint1"));
-	Waypoint1->SetHiddenInGame(false, true);
+	Waypoint1->SetHiddenInGame(true, true);
 	Waypoint1->AttachTo(RootComponent);
 	Waypoint1->SetAbsolute(true, false, true);
 	Waypoint1->SetSprite(TargetIcon.Object);
+	Waypoint1->SetWorldLocation(this->GetActorLocation());
 
 	Waypoint2 = CreateDefaultSubobject<UBillboardComponent>(TEXT("Waypoint2"));
-	Waypoint2->SetHiddenInGame(false, true);
+	Waypoint2->SetHiddenInGame(true, true);
 	Waypoint2->AttachTo(RootComponent);
 	Waypoint2->SetAbsolute(true, false, true);
 	Waypoint2->SetSprite(TargetIcon.Object);
+	Waypoint2->SetWorldLocation(this->GetActorLocation());
+
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	Waypoints.Add(CreateDefaultSubobject<UBillboardComponent>(FName("Waypoint", i + 3)));
+	//	Waypoints[i]->SetHiddenInGame(true, true);
+	//	Waypoints[i]->AttachTo(RootComponent);
+	//	Waypoints[i]->SetAbsolute(true, false, true);
+	//	Waypoints[i]->SetSprite(TargetIcon.Object);
+	//	Waypoints[i]->SetWorldLocation(this->GetActorLocation());
+	//}
 }
 
 // Called when the game starts or when spawned

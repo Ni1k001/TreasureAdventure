@@ -7,6 +7,20 @@
 #include "Runtime/Engine/Classes/Engine/TargetPoint.h"
 #include "Enemy.generated.h"
 
+USTRUCT(BlueprintType)
+struct FContainer
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	
+	class UBillboardComponent* Waypoint;
+
+	FContainer()
+	{
+	}
+};
+
 UENUM(BlueprintType)
 namespace EEnemyType
 {
@@ -31,6 +45,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		class UBillboardComponent* Waypoint2;
+
+	UPROPERTY(EditAnywhere)
+		TArray<struct FContainer> Waypoints;
 
 protected:
 	// Called when the game starts or when spawned
