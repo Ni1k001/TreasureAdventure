@@ -8,7 +8,6 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Components/BillboardComponent.h"
 
 #define COLLISION_PLAYER ECollisionChannel::ECC_GameTraceChannel1
 #define COLLISION_ENEMY ECollisionChannel::ECC_GameTraceChannel2
@@ -50,32 +49,6 @@ AEnemy::AEnemy()
 	// Configure Overlapping
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd);
-
-	static ConstructorHelpers::FObjectFinder<UTexture2D> TargetIcon(TEXT("/Engine/EditorMaterials/TargetIcon.TargetIcon"));
-
-	Waypoint1 = CreateDefaultSubobject<UBillboardComponent>(TEXT("Waypoint1"));
-	Waypoint1->SetHiddenInGame(true, true);
-	Waypoint1->AttachTo(RootComponent);
-	Waypoint1->SetAbsolute(true, false, true);
-	Waypoint1->SetSprite(TargetIcon.Object);
-	Waypoint1->SetWorldLocation(this->GetActorLocation());
-
-	Waypoint2 = CreateDefaultSubobject<UBillboardComponent>(TEXT("Waypoint2"));
-	Waypoint2->SetHiddenInGame(true, true);
-	Waypoint2->AttachTo(RootComponent);
-	Waypoint2->SetAbsolute(true, false, true);
-	Waypoint2->SetSprite(TargetIcon.Object);
-	Waypoint2->SetWorldLocation(this->GetActorLocation());
-
-	//for (int i = 0; i < 5; i++)
-	//{
-	//	Waypoints.Add(CreateDefaultSubobject<UBillboardComponent>(FName("Waypoint", i + 3)));
-	//	Waypoints[i]->SetHiddenInGame(true, true);
-	//	Waypoints[i]->AttachTo(RootComponent);
-	//	Waypoints[i]->SetAbsolute(true, false, true);
-	//	Waypoints[i]->SetSprite(TargetIcon.Object);
-	//	Waypoints[i]->SetWorldLocation(this->GetActorLocation());
-	//}
 }
 
 // Called when the game starts or when spawned
@@ -117,16 +90,6 @@ int AEnemy::GetHealth()
 int AEnemy::GetMaxHealth()
 {
 	return MaxHealth;
-}
-
-FVector AEnemy::GetWaypoint1()
-{
-	return Waypoint1->GetComponentLocation();
-}
-
-FVector AEnemy::GetWaypoint2()
-{
-	return Waypoint2->GetComponentLocation();
 }
 
 EEnemyType::EnemyType AEnemy::GetEnemyType()
@@ -204,6 +167,11 @@ void AEnemy::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActo
 	ClearComponentOverlaps();
 
 	UE_LOG(LogTemp, Warning, TEXT("Stopped Overlaping"));
+}
+
+TArray<ATargetPoint*> AEnemy::GetWaypoints()
+{
+	return Waypoints;
 }
 
 #if WITH_EDITOR
