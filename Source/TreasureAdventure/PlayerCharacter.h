@@ -7,6 +7,7 @@
 #include "TreasureAdventure.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
+
 #include "PlayerCharacter.generated.h"
 
 
@@ -103,4 +104,77 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		class USoundBase* LifeUpSound;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Config")
+		int StarCoinCount = 0;
+
+public:
+	UFUNCTION(BlueprintPure)
+		int GetStarCoinCount();
+
+	UFUNCTION(BlueprintCallable)
+		void AddStarCoin();
+
+	UFUNCTION(BlueprintCallable)
+		void SetStarCoinCount(int value);
+
+	
+	//########################## MultiThreading test
+public:
+	UPROPERTY(EditAnywhere, Category = MultiThreading)
+		int32 MaxPrime;
+
+	UFUNCTION(BlueprintCallable, Category = MultiThreading)
+		void CalculatePrimeNumbersAsync();
+};
+
+namespace ThreadingTest
+{
+	static void CalculatePrimeNumbers(int32 UpperLimit)
+	{
+		for (int32 i = 1; i <= UpperLimit; i++)
+		{
+			bool isPrime = true;
+
+			for (int32 j = 2; j <= i / 2; j++)
+			{
+				if (FMath::Fmod(i, j) == 0)
+				{
+					isPrime = false;
+					break;
+				}
+			}
+
+			if (isPrime)
+			{
+				GLog->Log("Prime number #" + FString::FromInt(i) + ": " + FString::FromInt(i));
+			}
+		}
+	}
+}
+
+class PrimeCalculationAsyncTask : public FNonAbandonableTask
+{
+	int32 MaxPrime;
+
+public:
+	PrimeCalculationAsyncTask(int32 MaxPrime)
+	{
+		this->MaxPrime = MaxPrime;
+	}
+
+	FORCEINLINE TStatId GetStatId() const
+	{
+		RETURN_QUICK_DECLARE_CYCLE_STAT(PrimeCalculationAsyncTask, STATGROUP_ThreadPoolAsyncTasks);
+	}
+
+	void DoWork()
+	{
+		ThreadingTest::CalculatePrimeNumbers(MaxPrime);
+
+		UE_LOG(LogTemp, Warning, TEXT("##############################################"));
+		UE_LOG(LogTemp, Warning, TEXT("FINISH"));
+		UE_LOG(LogTemp, Warning, TEXT("##############################################"));
+	}
 };

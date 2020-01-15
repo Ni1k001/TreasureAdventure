@@ -26,6 +26,8 @@ ACollectable::ACollectable()
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ACollectable::BeginOverlap);
 
 	StarID = 0;
+	bHasRequirements = false;
+	RequiredCoins = 0;
 
 	RotationRate = FRotator(0.f, 0.f, 0.f);
 }
@@ -58,6 +60,9 @@ void ACollectable::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 			Player->UpdateCoinCount();
 		else if (CollectableType == ECollectable::EStar)
 			GI->UpdateStarCount(StarID);
+		else if (CollectableType == ECollectable::EStarCoin)
+			Player->AddStarCoin();
+
 		if (CollectSound)
 		{
 			UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, CollectSound);
@@ -74,11 +79,22 @@ bool ACollectable::CanEditChange(const UProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
 
-	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(ACollectable, StarID))
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(ACollectable, StarID) || InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(ACollectable, bHasRequirements))
 	{
 		return CollectableType == ECollectable::EStar;
 	}
 
 	return ParentVal;
+}
+
+void ACollectable::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (CollectableType != ECollectable::EStar)
+		bHasRequirements = false;
+
+	if (!bHasRequirements)
+		RequiredCoins = 0;
 }
 #endif

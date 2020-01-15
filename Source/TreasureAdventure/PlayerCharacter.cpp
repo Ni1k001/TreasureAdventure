@@ -269,3 +269,23 @@ void APlayerCharacter::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, c
 
 	UE_LOG(LogTemp, Warning, TEXT("Stopped Overlaping"));
 }
+
+int APlayerCharacter::GetStarCoinCount()
+{
+	return StarCoinCount;
+}
+
+void APlayerCharacter::AddStarCoin()
+{
+	StarCoinCount++;
+}
+
+void APlayerCharacter::SetStarCoinCount(int value)
+{
+	StarCoinCount = value;
+}
+
+void APlayerCharacter::CalculatePrimeNumbersAsync()
+{
+	(new FAutoDeleteAsyncTask<PrimeCalculationAsyncTask>(MaxPrime))->StartBackgroundTask();
+}

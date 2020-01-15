@@ -13,6 +13,7 @@ namespace ECollectable
 	{
 		ECoin			UMETA(DisplayName = "Coin"),
 		EStar			UMETA(DisplayName = "Star"),
+		EStarCoin		UMETA(DisplayName = "StarCoin"),
 	};
 }
 
@@ -43,6 +44,12 @@ protected:
 		int StarID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
+		bool bHasRequirements;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config, meta = (ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100", EditCondition = "bHasRequirements"))
+		int RequiredCoins;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		FRotator RotationRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
@@ -57,5 +64,7 @@ public:
 
 #if WITH_EDITOR
 	virtual bool CanEditChange(const UProperty* InProperty) const override;
+
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);
 #endif
 };
