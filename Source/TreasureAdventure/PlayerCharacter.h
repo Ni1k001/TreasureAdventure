@@ -6,10 +6,29 @@
 #include "Engine.h"
 #include "TreasureAdventure.h"
 #include "Components/TimelineComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
-
 #include "PlayerCharacter.generated.h"
 
+/*UENUM(BlueprintType)
+enum class EInputMode : uint8
+{
+	ENone 				UMETA(DisplayName = "None"),
+	EGameAndUIMode 		UMETA(DisplayName = "GameAndUIMode"),
+	EGameOnlyMode 		UMETA(DisplayName = "GameOnlyMode"),
+	EUIOnlyMode 		UMETA(DisplayName = "UIOnlyMode")
+};*/
+
+UENUM(BlueprintType)
+enum class EInputMode : uint8
+{
+	EGame 		UMETA(DisplayName = "GameMode"),
+	ECursor			UMETA(DisplayName = "CursorMode"),
+};
+
+//#####################################
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMousePressDelegate, bool, Delta);
+//#####################################
 
 UCLASS()
 class TREASUREADVENTURE_API APlayerCharacter : public ACharacter
@@ -18,7 +37,7 @@ class TREASUREADVENTURE_API APlayerCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	APlayerCharacter();
+	APlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -53,36 +72,36 @@ protected:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
-		void UpdateHealth(int Value);
+	UFUNCTION(BlueprintCallable, Category="Player|Health")
+		void UpdateHealth(int InHealth);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintGetter, Category = "Player|Health")
 		int GetHealth();
-	
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintGetter, Category = "Player|Health")
 		int GetMaxHealth();
 
-	UFUNCTION()
+	UFUNCTION(Category = "Player|Collectable")
 		void UpdateCoinCount();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintGetter, Category = "Player|Collectable")
 		int GetCoinCount();
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Health")
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetHealth, Category = "Player|Health")
 		int Health;
 
-	UPROPERTY(EditAnywhere, Category = "Health")
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetMaxHealth, Category = "Player|Health")
 		int MaxHealth;
 
-	UPROPERTY(EditAnywhere, Category = "Health")
+	UPROPERTY(EditAnywhere, Category = "Player|Health")
 		float InvulnerableTime;
 
-	UPROPERTY(EditAnywhere, Category = "Health")
+	UPROPERTY(EditAnywhere, Category = "Player|Health")
 		float BlinkingTime;;
 
 	FTimerHandle DamageTimer;
@@ -101,31 +120,87 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 		void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Config)
 		class USoundBase* LifeUpSound;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Config")
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetStarCoinCount, BlueprintSetter = SetStarCoinCount, Category = "Player|Collectable")
 		int StarCoinCount = 0;
 
 public:
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter, Category = "Player|Collectable")
 		int GetStarCoinCount();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Player|Collectable")
 		void AddStarCoin();
 
-	UFUNCTION(BlueprintCallable)
-		void SetStarCoinCount(int value);
+	UFUNCTION(BlueprintSetter, Category = "Player|Collectable")
+		void SetStarCoinCount(int InStarCoinCount);
 
-	
+private:
+	UPROPERTY(BlueprintGetter = GetbIsInWater, BlueprintSetter = SetbIsInWater, Category = "Player|Air")
+		bool bIsInWater;
+
+	UPROPERTY(BlueprintGetter = GetAirAmount, BlueprintSetter = SetAirAmount, meta = (ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100"), Category = "Player|Air")
+		float Air;
+
+public:
+	UFUNCTION(BlueprintSetter, Category = "Player|Air")
+		void SetbIsInWater(bool InBIsInWater);
+
+	UFUNCTION(BlueprintGetter, Category = "Player|Air")
+		bool GetbIsInWater();
+
+	UFUNCTION(BlueprintSetter, Category = "Player|Air")
+		void SetAirAmount(float InAir);
+
+	UFUNCTION(BlueprintGetter, Category = "Player|Air")
+		float GetAirAmount();
+
+private:
+	UPROPERTY()
+		EInputMode InputMode;
+
+public:
+	UFUNCTION()
+		void ToggleInputMode();
+
+	UFUNCTION()
+		void OnLeftMousePress();
+
+	UPROPERTY(BlueprintAssignable)
+		FMousePressDelegate OnMousePress;
+
+	UFUNCTION()
+		void OnLeftMouseReleased();
+
+	//##########################
+	/*UFUNCTION(BlueprintPure, Category = "Runtime Inspector")
+		EInputMode GetCurrentViewMode(const APlayerController* PlayerController);
+
+	UFUNCTION()
+		void ToggleInputMode();*/
+
+	const FString EnumToString(const TCHAR* Enum, int32 EnumValue)
+	{
+		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, Enum, true);
+		if (!EnumPtr)
+			return NSLOCTEXT("Invalid", "Invalid", "Invalid").ToString();
+
+		#if WITH_EDITOR
+			return EnumPtr->GetDisplayNameText(EnumValue).ToString();
+		#else
+			return EnumPtr->GetEnumName(EnumValue);
+		#endif
+	}
+
 	//########################## MultiThreading test
 public:
 	UPROPERTY(EditAnywhere, Category = MultiThreading)
 		int32 MaxPrime;
 
-	UFUNCTION(BlueprintCallable, Category = MultiThreading)
+	UFUNCTION(BlueprintCallable, Category = "Runtime Inspector|MultiThreading")
 		void CalculatePrimeNumbersAsync();
 };
 

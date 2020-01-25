@@ -12,3 +12,7 @@ Saved
 *.suo
 *.xcodeproj
 *.xcworkspace
+Plugins
+Content/Platformer
+Content/SuperGrid
+Content/LSS_LoadingScreenSystem

@@ -95,5 +95,5 @@ public:
 		static FString GetAppVersion();
 
 private:
-	int MapCount = 3;
+	int MapCount = 4;
 };

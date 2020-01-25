@@ -7,18 +7,21 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "TAGameInstance.h"
+#include "SpecialBlock.h"
 #include "TreasureAdventureGameMode.h"
 #include "Engine/Blueprint.h"
 #include "DrawDebugHelpers.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "UObject/ConstructorHelpers.h"
 
 #define COLLISION_PLAYER ECollisionChannel::ECC_GameTraceChannel1
 #define COLLISION_ENEMY ECollisionChannel::ECC_GameTraceChannel2
 
 // Sets default values
-APlayerCharacter::APlayerCharacter()
+APlayerCharacter::APlayerCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -57,6 +60,8 @@ APlayerCharacter::APlayerCharacter()
 
 	bCanBeDamaged = true;
 
+	InputMode = EInputMode::EGame;
+
 	// Configure Overlapping
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
 	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapEnd);
@@ -70,7 +75,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-
+	
 }
 
 // Called every frame
@@ -78,6 +83,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
 }
 
 // Called to bind functionality to input
@@ -99,6 +105,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	// Set up action key bindings
 	//PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCharacter::PauseGame);
+	PlayerInputComponent->BindAction("ToggleInputMode", IE_Pressed, this, &APlayerCharacter::ToggleInputMode);
+	PlayerInputComponent->BindAction("CursorClick", IE_Pressed, this, &APlayerCharacter::OnLeftMousePress);
+	PlayerInputComponent->BindAction("CursorClick", IE_Released, this, &APlayerCharacter::OnLeftMouseReleased);
 }
 
 void APlayerCharacter::TurnAtRate(float Rate)
@@ -115,46 +124,70 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 
 void APlayerCharacter::MoveForward(float Value)
 {
+
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = GetWorld()->GetFirstPlayerController()->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
+
+		if (InputMode == EInputMode::EGame)
+			AddMovementInput(Direction, Value);
+		else
+		{
+			float LocationX, LocationY;
+			GetWorld()->GetFirstPlayerController()->GetMousePosition(LocationX, LocationY);
+
+			FVector2D MousePosition(LocationX, LocationY);
+			MousePosition.Y += -Value * BaseLookUpRate * 0.2f;
+			GetWorld()->GetFirstPlayerController()->SetMouseLocation(MousePosition.X, MousePosition.Y);
+		}
 	}
 }
 
 void APlayerCharacter::MoveRight(float Value)
 {
+
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
 		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = GetWorld()->GetFirstPlayerController()->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get right vector 
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
-		AddMovementInput(Direction, Value);
+		
+		if (InputMode == EInputMode::EGame)
+			AddMovementInput(Direction, Value);
+		else
+		{
+			float LocationX, LocationY;
+			GetWorld()->GetFirstPlayerController()->GetMousePosition(LocationX, LocationY);
+
+			FVector2D MousePosition(LocationX, LocationY);
+			MousePosition.X += Value * BaseTurnRate * 0.2f;
+			GetWorld()->GetFirstPlayerController()->SetMouseLocation(MousePosition.X, MousePosition.Y);
+		}
 	}
 }
 
-void APlayerCharacter::UpdateHealth(int Value)
+void APlayerCharacter::UpdateHealth(int InHealth)
 {
-	if (Health + Value > MaxHealth)
+	if (Health + InHealth > MaxHealth)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Health is Max(%d) - %d"), GetMaxHealth(), GetHealth());
 	}
-	else if (Health + Value < 0)
+	else if (Health + InHealth < 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player has no health - %d"), GetHealth());
 	}
 	else
 	{
-		Health += Value;
+		Health += InHealth;
 		UE_LOG(LogTemp, Warning, TEXT("Health = %d"), GetHealth());
 	}
 
@@ -233,16 +266,20 @@ float APlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 			UE_LOG(LogTemp, Warning, TEXT("DAMAGE: %d"), FMath::FloorToInt(ActualDamage));
 
 			bCanBeDamaged = false;
-			GetWorldTimerManager().SetTimer(DamageTimer, this, &APlayerCharacter::AllowDamage, 1.f, false, InvulnerableTime);
-			//								Timer,		 User, Function,					 , Rate, loop, firstDelay);
+			if (Health > 0)
+			{
+				GetWorldTimerManager().SetTimer(DamageTimer, this, &APlayerCharacter::AllowDamage, 1.f, false, InvulnerableTime);
+				//								Timer,		 User, Function,					 , Rate, loop, firstDelay);
 
-			GetWorldTimerManager().SetTimer(BlinkingTimer, this, &APlayerCharacter::Blink, BlinkingTime, true);
+				GetWorldTimerManager().SetTimer(BlinkingTimer, this, &APlayerCharacter::Blink, BlinkingTime, true);
 
-			// If the damage depletes our health set our lifespan to zero - which will destroy the actor  
-			if (Health <= 0)
+				// If the damage depletes our health set our lifespan to zero - which will destroy the actor  
+			}
+			else
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Health == 0"));
-				//ClearComponentOverlaps();
+				GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeUIOnly());
+				ClearComponentOverlaps();
 				//SetLifeSpan(0.001f);
 			}
 		}
@@ -265,7 +302,7 @@ void APlayerCharacter::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, c
 {
 	Super::OnActorEndOverlap;
 
-	ClearComponentOverlaps();
+	//ClearComponentOverlaps();
 
 	UE_LOG(LogTemp, Warning, TEXT("Stopped Overlaping"));
 }
@@ -280,10 +317,132 @@ void APlayerCharacter::AddStarCoin()
 	StarCoinCount++;
 }
 
-void APlayerCharacter::SetStarCoinCount(int value)
+void APlayerCharacter::SetStarCoinCount(int InStarCoinCount)
 {
-	StarCoinCount = value;
+	StarCoinCount = InStarCoinCount;
 }
+
+void APlayerCharacter::SetbIsInWater(bool InBIsInWater)
+{
+	bIsInWater = InBIsInWater;
+}
+
+bool APlayerCharacter::GetbIsInWater()
+{
+	return bIsInWater;
+}
+
+void APlayerCharacter::SetAirAmount(float InAir)
+{
+	Air = InAir;
+}
+
+float APlayerCharacter::GetAirAmount()
+{
+	return Air;
+}
+
+void APlayerCharacter::ToggleInputMode()
+{
+	if (InputMode == EInputMode::EGame)
+	{
+		InputMode = EInputMode::ECursor;
+		FInputModeGameAndUI mode;
+		mode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		mode.SetHideCursorDuringCapture(false);
+		GetWorld()->GetFirstPlayerController()->SetInputMode(mode);
+		GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
+	}
+	else
+	{
+		InputMode = EInputMode::EGame;
+		GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
+		GetWorld()->GetFirstPlayerController()->bShowMouseCursor = false;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("InputMode: %s"), *EnumToString(TEXT("EInputMode"), static_cast<uint8>(InputMode)));
+}
+
+void APlayerCharacter::OnLeftMousePress()
+{
+	if (InputMode == EInputMode::ECursor)
+	{
+		FHitResult hit;
+		GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, hit);
+		
+		OnMousePress.Broadcast(true);
+		
+		if (hit.bBlockingHit)
+		{
+			if (hit.Actor != NULL && hit.GetActor()->IsA(ASpecialBlock::StaticClass()))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s"), *hit.GetActor()->GetName());
+				
+				ASpecialBlock* obj = Cast<ASpecialBlock>(hit.GetActor());
+				
+				if (obj)
+				{
+					if (!obj->GetTimeline().IsPlaying() || obj->GetTimeline().IsReversing())
+						obj->PlayTimeline();
+					else
+						obj->ReverseTimeline();
+				}
+			}
+		}
+	}
+}
+
+void APlayerCharacter::OnLeftMouseReleased()
+{
+	if (InputMode == EInputMode::ECursor)
+	{
+		OnMousePress.Broadcast(false);
+	}
+}
+
+//#####################################
+/*EInputMode APlayerCharacter::GetCurrentViewMode(const APlayerController* PlayerController)
+{
+	if (IsValid(PlayerController))
+	{
+		UGameViewportClient* GameViewportClient = PlayerController->GetWorld()->GetGameViewport();
+		ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+
+		bool ignore = GameViewportClient->IgnoreInput();
+		EMouseCaptureMode capt = GameViewportClient->CaptureMouseOnClick();
+
+		if (ignore == false && capt == EMouseCaptureMode::CaptureDuringMouseDown)
+		{
+			return EInputMode::EGameAndUIMode;  // Game And UI
+		}
+		else if (ignore == true && capt == EMouseCaptureMode::NoCapture)
+		{
+			return EInputMode::EUIOnlyMode;  // UI Only
+		}
+		else
+		{
+			return EInputMode::EGameOnlyMode;  // Game Only
+		}
+	}
+
+	return EInputMode::ENone;
+}
+
+void APlayerCharacter::ToggleInputMode()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	
+	check(PlayerController);
+	
+	EInputMode Input = GetCurrentViewMode(PlayerController);
+	
+	if (Input == EInputMode::EGameOnlyMode)
+		PlayerController->SetInputMode(FInputModeUIOnly());
+	else if (Input == EInputMode::EUIOnlyMode)
+		PlayerController->SetInputMode(FInputModeGameOnly());
+
+	UE_LOG(LogTemp, Warning, TEXT("Previous: %s"), *EnumToString(TEXT("EInputMode"), static_cast<uint8>(Input)));
+	UE_LOG(LogTemp, Warning, TEXT("Current: %s"), *EnumToString(TEXT("EInputMode"), static_cast<uint8>(GetCurrentViewMode(PlayerController))));
+}*/
 
 void APlayerCharacter::CalculatePrimeNumbersAsync()
 {

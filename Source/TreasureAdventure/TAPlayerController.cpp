@@ -27,6 +27,7 @@ bool ATAPlayerController::InputKey(FKey Key, EInputEvent EventType, float Amount
 void ATAPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+	
 	if (IsLocalController() && bResetGamepadDetectionAfterNoInput && bIsUsingGamepad)
 	{
 		float now = GetWorld()->TimeSeconds;
@@ -35,4 +36,6 @@ void ATAPlayerController::PlayerTick(float DeltaTime)
 			bIsUsingGamepad = false;
 		}
 	}
+
+	
 }

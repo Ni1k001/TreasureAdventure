@@ -48,7 +48,7 @@ public:
 		TMap<FString, bool> LevelAvailability;
 
 private:
-	int MapCount = 3;
+	int MapCount = 4;
 };
 
 

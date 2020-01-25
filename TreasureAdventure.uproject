@@ -32,6 +32,11 @@
 		{
 			"Name": "Niagara",
 			"Enabled": true
+		},
+		{
+			"Name": "LoadingScreenSystemPlugin",
+			"Enabled": true,
+			"MarketplaceURL": "http://www.indieBrothers.com"
 		}
 	],
 	"TargetPlatforms": [
