@@ -106,8 +106,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	// Set up action key bindings
 	//PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCharacter::PauseGame);
 	PlayerInputComponent->BindAction("ToggleInputMode", IE_Pressed, this, &APlayerCharacter::ToggleInputMode);
-	PlayerInputComponent->BindAction("CursorClick", IE_Pressed, this, &APlayerCharacter::OnLeftMousePress);
-	PlayerInputComponent->BindAction("CursorClick", IE_Released, this, &APlayerCharacter::OnLeftMouseReleased);
+	PlayerInputComponent->BindAction("CursorClick", IE_Pressed, this, &APlayerCharacter::OnCursorPressed);
+	PlayerInputComponent->BindAction("CursorClick", IE_Released, this, &APlayerCharacter::OnCursorReleased);
 }
 
 void APlayerCharacter::TurnAtRate(float Rate)
@@ -362,14 +362,14 @@ void APlayerCharacter::ToggleInputMode()
 	UE_LOG(LogTemp, Warning, TEXT("InputMode: %s"), *EnumToString(TEXT("EInputMode"), static_cast<uint8>(InputMode)));
 }
 
-void APlayerCharacter::OnLeftMousePress()
+void APlayerCharacter::OnCursorPressed()
 {
 	if (InputMode == EInputMode::ECursor)
 	{
 		FHitResult hit;
 		GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, hit);
 		
-		OnMousePress.Broadcast(true);
+		OnCursorPress.Broadcast(true);
 		
 		if (hit.bBlockingHit)
 		{
@@ -391,11 +391,11 @@ void APlayerCharacter::OnLeftMousePress()
 	}
 }
 
-void APlayerCharacter::OnLeftMouseReleased()
+void APlayerCharacter::OnCursorReleased()
 {
 	if (InputMode == EInputMode::ECursor)
 	{
-		OnMousePress.Broadcast(false);
+		OnCursorPress.Broadcast(false);
 	}
 }
 

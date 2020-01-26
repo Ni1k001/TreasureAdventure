@@ -27,7 +27,7 @@ enum class EInputMode : uint8
 };
 
 //#####################################
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMousePressDelegate, bool, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCursorPressDelegate, bool, Delta);
 //#####################################
 
 UCLASS()
@@ -167,13 +167,13 @@ public:
 		void ToggleInputMode();
 
 	UFUNCTION()
-		void OnLeftMousePress();
+		void OnCursorPressed();
 
 	UPROPERTY(BlueprintAssignable)
-		FMousePressDelegate OnMousePress;
+		FCursorPressDelegate OnCursorPress;
 
 	UFUNCTION()
-		void OnLeftMouseReleased();
+		void OnCursorReleased();
 
 	//##########################
 	/*UFUNCTION(BlueprintPure, Category = "Runtime Inspector")
