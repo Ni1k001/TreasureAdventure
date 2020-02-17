@@ -22,6 +22,7 @@ void UTAGameInstance::OnStart()
 	LifeCount = 3;
 	CurrentLevel = "Level1";
 	CurrentStreamingLevel = "L_MainMenu";
+	bControllerType = false;
 
 	/*****************************************************************/
 	//LevelCollectedStarFlag.Add("LevelTest", 0);
@@ -93,9 +94,9 @@ int UTAGameInstance::GetLifeCount()
 	return LifeCount;
 }
 
-void UTAGameInstance::SetCurrentLevel(FString level)
+void UTAGameInstance::SetCurrentLevel(FString InCurrentLevel)
 {
-	CurrentLevel = level;
+	CurrentLevel = InCurrentLevel;
 }
 
 FString UTAGameInstance::GetCurrentLevel()
@@ -103,9 +104,9 @@ FString UTAGameInstance::GetCurrentLevel()
 	return CurrentLevel;
 }
 
-void UTAGameInstance::SetCurrentStreamingLevel(FName level)
+void UTAGameInstance::SetCurrentStreamingLevel(FName InCurrentStreamingLevel)
 {
-	CurrentStreamingLevel = level;
+	CurrentStreamingLevel = InCurrentStreamingLevel;
 	OnLevelStreamingChange();
 }
 
@@ -125,6 +126,7 @@ void UTAGameInstance::SaveData()
 	SaveGameInstance->TotalStarCount = GetTotalStarCount();
 	SaveGameInstance->LifeCount = GetLifeCount();
 	SaveGameInstance->CurrentLevel = CurrentLevel;
+	SaveGameInstance->bControllerType = GetbControllerType();
 
 	for (int i = 1; i <= MapCount; i++)
 	{
@@ -155,6 +157,7 @@ void UTAGameInstance::LoadData()
 			TotalStarCount = LoadGameInstance->TotalStarCount;
 			LifeCount = LoadGameInstance->LifeCount;
 			CurrentLevel = LoadGameInstance->CurrentLevel;
+			bControllerType = LoadGameInstance->bControllerType;
 
 			UE_LOG(LogTemp, Warning, TEXT("Game loaded"));
 
@@ -242,6 +245,7 @@ void UTAGameInstance::ResetSave()
 	TotalStarCount = 0;
 	LifeCount = 3;
 	CurrentLevel = "Level1";
+	bControllerType = false;
 
 	for (int i = 1; i <= MapCount; i++)
 	{
@@ -261,4 +265,14 @@ FString UTAGameInstance::GetAppVersion()
 	GConfig->GetString(TEXT("/Script/EngineSettings.GeneralProjectSettings"), TEXT("ProjectVersion"), AppVersion, GGameIni);
 
 	return AppVersion;
+}
+
+void UTAGameInstance::SetbControllerType(bool InBControllerMode)
+{
+	bControllerType = InBControllerMode;
+}
+
+bool UTAGameInstance::GetbControllerType()
+{
+	return bControllerType;
 }

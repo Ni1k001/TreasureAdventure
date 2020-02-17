@@ -47,6 +47,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Level)
 		TMap<FString, bool> LevelAvailability;
 
+	UPROPERTY(VisibleAnywhere, Category = Input)
+		bool bControllerType;
+
 private:
 	int MapCount = 4;
 };

@@ -21,9 +21,14 @@ ASpecialBlock::ASpecialBlock()
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComponent"));
 	CollisionComp->SetBoxExtent(FVector(40.f, 40.f, 40.f));
 	CollisionComp->SetupAttachment(RootComponent);
-	CollisionComp->SetHiddenInGame(false);
+	CollisionComp->SetHiddenInGame(true);
 
 	Speed = 1;
+
+	bIsMovable = true;
+	bIsRotatable = false;
+	bIsFullRotation = false;
+	RotationAngle = FRotator::ZeroRotator;
 }
 
 // Called when the game starts or when spawned
@@ -41,6 +46,9 @@ void ASpecialBlock::BeginPlay()
 		Timeline.AddInterpFloat(FloatCurve, onTimelineCallback);
 		Timeline.SetTimelineFinishedFunc(onTimelineFinishedCallback);
 		Timeline.SetPlayRate(Speed);
+
+		if (bIsFullRotation)
+			EndRotation = StartRotation + RotationAngle;
 	}
 }
 
@@ -55,17 +63,70 @@ void ASpecialBlock::Tick(float DeltaTime)
 void ASpecialBlock::TimelineCallback(float Delta)
 {
 	if (Mesh)
-		Mesh->SetRelativeLocation(FMath::Lerp(StartPosition, EndPosition, Delta));
+	{
+		if (bIsMovable && !bIsRotatable)
+			Mesh->SetRelativeLocation(FMath::Lerp(StartPosition, EndPosition, Delta));
+		else if (!bIsMovable && bIsRotatable)
+			Mesh->SetRelativeRotation(FQuat::SlerpFullPath(FQuat(StartRotation), FQuat(EndRotation), Delta));
+		else if (bIsMovable && bIsRotatable)
+			Mesh->SetRelativeLocationAndRotation(FMath::Lerp(StartPosition, EndPosition, Delta), FMath::Lerp(FQuat(StartRotation), FQuat(EndRotation), Delta));
+	}
 }
 
 void ASpecialBlock::TimelineFinishedCallback()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Finish\t%f , %f , %f"), GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);
-	if (GetActorLocation() == EndPosition)
+	if (bIsMovable && !bIsRotatable)
 	{
-		Swap(StartPosition, EndPosition);
-		Timeline.SetPlaybackPosition(0.f, false);
+		UE_LOG(LogTemp, Warning, TEXT("Test 1"));
+		if (GetActorLocation() == EndPosition)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Test 1-1"));
+			Swap(StartPosition, EndPosition);
+
+			Timeline.SetPlaybackPosition(0.f, false);
+		}
 	}
+	else if (!bIsMovable && bIsRotatable)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Test 2"));
+		if (GetActorRotation() != StartRotation)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Test 2-1"));
+			if (bIsFullRotation)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Test 2-2"));
+				StartRotation = EndRotation;
+				EndRotation = EndRotation + RotationAngle;
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Test 2-3"));
+				Swap(StartRotation, EndRotation);
+			}
+
+			Timeline.SetPlaybackPosition(0.f, false);
+		}
+	}
+	else if (bIsMovable && bIsRotatable)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Test 3"));
+		if (GetActorLocation() == EndPosition && GetActorRotation() != StartRotation)
+		{
+			Swap(StartPosition, EndPosition);
+
+			if (bIsFullRotation)
+			{
+				StartRotation = EndRotation;
+				EndRotation = EndRotation + RotationAngle;
+			}
+			else
+				Swap(StartRotation, EndRotation);
+
+			Timeline.SetPlaybackPosition(0.f, false);
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("%f %f %f"), GetActorRotation().Roll, GetActorRotation().Pitch, GetActorRotation().Yaw);
 }
 
 void ASpecialBlock::PlayTimeline()
@@ -82,3 +143,25 @@ FTimeline ASpecialBlock::GetTimeline()
 {
 	return Timeline;
 }
+
+#if WITH_EDITOR
+bool ASpecialBlock::CanEditChange(const UProperty* InProperty) const
+{
+	const bool ParentVal = Super::CanEditChange(InProperty);
+
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(ASpecialBlock, EndRotation))
+	{
+		return (bIsRotatable == true && bIsFullRotation != true);
+	}
+
+	return ParentVal;
+}
+
+void ASpecialBlock::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (!bIsRotatable)
+		bIsFullRotation = false;
+}
+#endif

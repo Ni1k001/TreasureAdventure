@@ -13,6 +13,7 @@ UTASaveGame::UTASaveGame()
 	TotalStarCount = 0;
 	LifeCount = 3;
 	CurrentLevel = "Level1";
+	bControllerType = false;
 
 	/*****************************************************************/
 	//LevelCollectedStarFlag.Add("LevelTest", 0);

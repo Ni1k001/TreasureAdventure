@@ -75,7 +75,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	
+	UpdateHealth(0);
 }
 
 // Called every frame
@@ -192,10 +192,10 @@ void APlayerCharacter::UpdateHealth(int InHealth)
 	}
 
 	if (Health == 2)
-		SetActorRelativeScale3D(FVector(0.7f, 0.7f, 0.7f));
+		SetActorRelativeScale3D(FVector(0.55f, 0.55f, 0.55f));
 	else if (Health == 1)
 	{
-		SetActorRelativeScale3D(FVector(0.6f, 0.6f, 0.6f));
+		SetActorRelativeScale3D(FVector(0.45f, 0.45f, 0.45f));
 	}
 }
 

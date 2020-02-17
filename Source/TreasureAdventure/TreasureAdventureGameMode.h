@@ -15,6 +15,9 @@ class ATreasureAdventureGameMode : public AGameModeBase
 public:
 	ATreasureAdventureGameMode();
 
+	UFUNCTION(Exec)
+		void TEST();
+
 protected:
 	virtual void BeginPlay() override;
 };
