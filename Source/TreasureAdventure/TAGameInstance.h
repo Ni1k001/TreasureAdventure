@@ -72,6 +72,9 @@ public:
 		int GetTotalStarCount();
 
 	UFUNCTION()
+		void SetTotalStarCount(int InTotalStarCount);
+
+	UFUNCTION()
 		void UpdateLifeCount(int value);
 
 	UFUNCTION(BlueprintGetter, Category = "TreasureAdventure|Health")

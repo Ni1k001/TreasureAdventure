@@ -18,6 +18,12 @@ public:
 	UFUNCTION(Exec)
 		void TEST();
 
+	UFUNCTION(Exec)
+		void UnlockAllLevels();
+
+	UFUNCTION(Exec)
+		void ClearChanges();
+
 protected:
 	virtual void BeginPlay() override;
 };

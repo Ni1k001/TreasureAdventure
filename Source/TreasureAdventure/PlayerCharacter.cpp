@@ -368,7 +368,7 @@ void APlayerCharacter::OnCursorPressed()
 	{
 		FHitResult hit;
 		GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, hit);
-		
+
 		OnCursorPress.Broadcast(true);
 		
 		if (hit.bBlockingHit)

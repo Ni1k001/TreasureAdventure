@@ -84,6 +84,11 @@ int UTAGameInstance::GetTotalStarCount()
 	return TotalStarCount;
 }
 
+void UTAGameInstance::SetTotalStarCount(int InTotalStarCount)
+{
+	TotalStarCount = InTotalStarCount;
+}
+
 void UTAGameInstance::UpdateLifeCount(int value)
 {
 	LifeCount += value;
