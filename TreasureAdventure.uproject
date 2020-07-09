@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.21",
+	"EngineAssociation": "4.24",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -16,7 +16,7 @@
 	"Plugins": [
 		{
 			"Name": "ConsoleEnhanced",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/86123c85a4474d609c5cef8a7fc5786b"
 		},
 		{
@@ -35,12 +35,12 @@
 		},
 		{
 			"Name": "LoadingScreenSystemPlugin",
-			"Enabled": true,
-			"MarketplaceURL": "http://www.indieBrothers.com"
+			"Enabled": false,
+			"MarketplaceURL": "https://indiebrothers.itch.io/ue4-loading-screen-system-plugin-unreal-engine-4"
 		},
 		{
 			"Name": "AutoSettings",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/7f6a777da2724d4a9a3dd551f03a3ad1"
 		}
 	],

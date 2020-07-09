@@ -9,5 +9,6 @@ public class TreasureAdventureTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		ExtraModuleNames.Add("TreasureAdventure");
+		DefaultBuildSettings = BuildSettingsVersion.V2;
 	}
 }

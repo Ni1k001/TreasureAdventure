@@ -9,5 +9,6 @@ public class TreasureAdventureEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		ExtraModuleNames.Add("TreasureAdventure");
+		DefaultBuildSettings = BuildSettingsVersion.V2;
 	}
 }
